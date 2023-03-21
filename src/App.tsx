@@ -1,25 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { useEffect } from "react";
+import { useMediaQuery } from "react-responsive";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "./components/redux/store";
+import { getProducts, getCategories } from "./components/redux/productReducer";
+import MyAppBar from "./components/appbar";
+import Footer from "./components/footer";
+import HomePage from "./pages/homepage";
 
 function App() {
+  const mobileDisplay = useMediaQuery({ query: "(max-width: 600px)" });
+  const tabletDisplay = useMediaQuery({ query: "(max-width: 768px)" });
+
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    fetch("https://dummyjson.com/products?limit=0")
+      .then((res) => res.json())
+      .then(data=>{dispatch(getProducts(data.products))});
+
+    fetch("https://dummyjson.com/products/categories")
+      .then((res) => res.json())
+      .then(data=>{dispatch(getCategories(data))});
+
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <MyAppBar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+      </Routes>
+      <Footer />
+    </BrowserRouter>
   );
 }
 
